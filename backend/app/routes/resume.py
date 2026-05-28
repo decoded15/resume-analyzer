@@ -4,6 +4,7 @@ from pathlib import Path
 from app.parsers.pdf_parser import extract_text_from_pdf
 from app.utils.text_cleaner import clean_resume_text
 from app.services.resume_service import extract_resume_data
+from app.services.ats_service import analyze_ats_score
 
 router = APIRouter()
 
@@ -23,8 +24,10 @@ async def upload_resume(file: UploadFile = File(...)):
     extracted_text = extract_text_from_pdf(file_path)
     cleaned_text = clean_resume_text(extracted_text)
     structured_data = extract_resume_data(cleaned_text)
+    ats_analysis = analyze_ats_score(structured_data)
 
     return {
-        "message": "Resume uploaded successfully",
-        "structured_data" : structured_data
+        "message": "Resume analyzed successfully",
+        "structured_data": structured_data,
+        "ats_analysis": ats_analysis
     }
