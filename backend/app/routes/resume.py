@@ -3,6 +3,7 @@ import shutil
 from pathlib import Path
 from app.parsers.pdf_parser import extract_text_from_pdf
 from app.utils.text_cleaner import clean_resume_text
+from app.services.resume_service import extract_resume_data
 
 router = APIRouter()
 
@@ -21,9 +22,9 @@ async def upload_resume(file: UploadFile = File(...)):
     
     extracted_text = extract_text_from_pdf(file_path)
     cleaned_text = clean_resume_text(extracted_text)
+    structured_data = extract_resume_data(cleaned_text)
 
     return {
         "message": "Resume uploaded successfully",
-        "filename": file.filename,
-        "cleaned_text": cleaned_text
+        "structured_data" : structured_data
     }
