@@ -1,7 +1,7 @@
 from app.prompts.ats_prompt import ATS_PROMPT
 from app.services.gemini_service import generate_response
 from app.utils.json_parser import parse_json_response
-
+from app.models.ats_model import ATSAnalysis
 
 def analyze_ats_score(resume_data):
 
@@ -11,4 +11,6 @@ def analyze_ats_score(resume_data):
 
     parsed_response = parse_json_response(response)
 
-    return parsed_response
+    validated_response = ATSAnalysis(**parsed_response)
+
+    return validated_response.model_dump()

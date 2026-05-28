@@ -31,12 +31,27 @@ if uploaded_file:
 
         ats_data = data["ats_analysis"]
 
-        st.subheader("ATS Score")
+        st.subheader("Overall ATS Score")
 
         st.metric(
             label="ATS Score",
-            value=f"{ats_data['ats_score']}/100"
+            value=f"{ats_data['overall_score']}/100"
         )
+
+        st.subheader("Score Breakdown")
+
+        breakdown = ats_data["score_breakdown"]
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.metric("Formatting", breakdown["formatting"])
+            st.metric("Skills", breakdown["skills"])
+            st.metric("Impact", breakdown["impact"])
+
+        with col2:
+            st.metric("Keyword Optimization", breakdown["keyword_optimization"])
+            st.metric("Readability", breakdown["readability"])
 
         st.subheader("Strengths")
 
