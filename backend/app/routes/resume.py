@@ -2,6 +2,7 @@ from fastapi import APIRouter, UploadFile, File
 import shutil
 from pathlib import Path
 from app.parsers.pdf_parser import extract_text_from_pdf
+from app.utils.text_cleaner import clean_resume_text
 
 router = APIRouter()
 
@@ -19,9 +20,10 @@ async def upload_resume(file: UploadFile = File(...)):
         shutil.copyfileobj(file.file, buffer)
     
     extracted_text = extract_text_from_pdf(file_path)
-    
+    cleaned_text = clean_resume_text(extracted_text)
+
     return {
         "message": "Resume uploaded successfully",
         "filename": file.filename,
-        "extracted_text": extracted_text
+        "cleaned_text": cleaned_text
     }
