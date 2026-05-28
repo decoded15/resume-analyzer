@@ -11,7 +11,16 @@ uploaded_file = st.file_uploader(
 if uploaded_file:
 
     st.success("Resume uploaded successfully!")
-
+    target_role = st.selectbox(
+        "Select Target Role",
+        [
+            "Data Analyst",
+            "Backend Developer",
+            "AI Engineer",
+            "Software Engineer",
+            "Business Analyst"
+        ]
+    )
     if st.button("Analyze Resume"):
 
         with st.spinner("Analyzing resume..."):
@@ -22,9 +31,11 @@ if uploaded_file:
 
             response = requests.post(
                 "http://127.0.0.1:8000/upload-resume",
-                files=files
+                files=files,
+                data = {
+                    "target_role": target_role
+                }
             )
-
             data = response.json()
 
         st.success("Resume analyzed successfully!")
@@ -52,6 +63,34 @@ if uploaded_file:
         with col2:
             st.metric("Keyword Optimization", breakdown["keyword_optimization"])
             st.metric("Readability", breakdown["readability"])
+
+        role_data = data["role_fit_analysis"]
+
+        st.subheader("Role Fit Analysis")
+
+        st.metric(
+            "Role Fit Score",
+            f"{role_data['role_fit_score']}/100"
+        )
+
+        st.subheader("Role Fit Summary")
+
+        st.write(role_data["role_fit_summary"])
+
+        st.subheader("Matching Skills")
+
+        for skill in role_data["matching_skills"]:
+            st.success(skill)
+
+        st.subheader("Missing Skills")
+
+        for skill in role_data["missing_skills"]:
+            st.error(skill)
+
+        st.subheader("Improvement Recommendations")
+
+        for rec in role_data["improvement_recommendations"]:
+            st.info(rec)
 
         st.subheader("Strengths")
 

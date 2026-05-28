@@ -1,10 +1,11 @@
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter, UploadFile, File, Form
 import shutil
 from pathlib import Path
 from app.parsers.pdf_parser import extract_text_from_pdf
 from app.utils.text_cleaner import clean_resume_text
 from app.services.resume_service import extract_resume_data
 from app.services.ats_service import analyze_ats_score
+from app.services.role_fit_service import analyze_role_fit
 
 router = APIRouter()
 
@@ -14,7 +15,10 @@ Path(UPLOAD_DIR).mkdir(exist_ok=True)
 
 
 @router.post("/upload-resume")
-async def upload_resume(file: UploadFile = File(...)):
+async def upload_resume(
+    file: UploadFile = File(...),
+    target_role: str = Form(...)
+):
 
     file_path = f"{UPLOAD_DIR}/{file.filename}"
 
@@ -25,9 +29,13 @@ async def upload_resume(file: UploadFile = File(...)):
     cleaned_text = clean_resume_text(extracted_text)
     structured_data = extract_resume_data(cleaned_text)
     ats_analysis = analyze_ats_score(structured_data)
-
+    role_fit_analysis = analyze_role_fit(
+        structured_data,
+        target_role
+    )
     return {
         "message": "Resume analyzed successfully",
         "structured_data": structured_data,
-        "ats_analysis": ats_analysis
+        "ats_analysis": ats_analysis,
+        "role_fit_analysis": role_fit_analysis
     }
